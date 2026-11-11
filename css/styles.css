@@ -1,0 +1,45 @@
+/* ========================================================
+   ESTILOS PERSONALIZADOS - AUTOTECH
+   Estudiante: Carlos Ushiña
+   ======================================================== */
+
+body {
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+}
+
+main {
+    flex: 1;
+}
+
+/* Banner de Inicio con degradado automotriz */
+.hero-section {
+    background: linear-gradient(135deg, #1b1e22 0%, #2f353a 100%);
+    border-bottom: 4px solid #ffc107;
+}
+
+/* Botón amarillo destacado */
+.btn-warning {
+    color: #212529;
+    font-weight: 600;
+}
+
+/* Tarjetas con sombras suaves */
+.card {
+    border-radius: 10px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+}
+
+/* Resaltado de inputs */
+.form-control:focus, .form-select:focus {
+    border-color: #ffc107;
+    box-shadow: 0 0 0 0.25rem rgba(255, 193, 7, 0.25);
+}
