@@ -1,5 +1,5 @@
 /**
- * PANEL.JS - AutoTech
+ * PANEL.JS - AUTOFIX EVOL
  * Lógica del Dashboard y separación por roles:
  * - Rol 'Cliente': visualiza únicamente sus citas.
  * - Rol 'Administrador': gestiona todas las citas, cambia estados y elimina.
@@ -195,6 +195,71 @@ function eliminarCita(id) {
                 icon: "success",
                 title: "Cita Eliminada",
                 timer: 900,
+                showConfirmButton: false
+            });
+        }
+    });
+}
+
+// 4. Cambiar Contraseña (para usuarios con clave temporal 123 o cualquier usuario activo)
+function cambiarMiPassword() {
+    const sesion = obtenerSesion();
+    if (!sesion) return;
+
+    Swal.fire({
+        title: "Cambiar Contraseña",
+        html: `
+            <div class="text-start small mb-2">
+                <p class="text-muted mb-2">Usuario: <strong>${sesion.email}</strong></p>
+                <div class="mb-2">
+                    <label class="form-label fw-semibold">Nueva Contraseña:</label>
+                    <input type="password" id="nuevaPass" class="form-control form-control-sm" placeholder="Mínimo 3 caracteres">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label fw-semibold">Confirmar Contraseña:</label>
+                    <input type="password" id="confirmarPass" class="form-control form-control-sm" placeholder="Repite la nueva contraseña">
+                </div>
+            </div>
+        `,
+        showCancelButton: true,
+        confirmButtonColor: "#ffc107",
+        cancelButtonColor: "#6c757d",
+        confirmButtonText: "Guardar Nueva Clave",
+        cancelButtonText: "Cancelar",
+        preConfirm: () => {
+            const nueva = document.getElementById("nuevaPass").value.trim();
+            const conf = document.getElementById("confirmarPass").value.trim();
+            if (!nueva || !conf) {
+                Swal.showValidationMessage("Por favor complete ambos campos.");
+                return false;
+            }
+            if (nueva.length < 3) {
+                Swal.showValidationMessage("La contraseña debe tener al menos 3 caracteres.");
+                return false;
+            }
+            if (nueva !== conf) {
+                Swal.showValidationMessage("Las contraseñas no coinciden.");
+                return false;
+            }
+            return nueva;
+        }
+    }).then((res) => {
+        if (res.isConfirmed && res.value) {
+            const nuevaPass = res.value;
+            let usuarios = obtenerUsuarios();
+            let u = usuarios.find(user => user.email.toLowerCase() === sesion.email.toLowerCase());
+            if (u) {
+                u.pass = nuevaPass;
+                localStorage.setItem("usuarios", JSON.stringify(usuarios));
+            }
+            sesion.pass = nuevaPass;
+            guardarSesion(sesion);
+
+            Swal.fire({
+                icon: "success",
+                title: "¡Contraseña actualizada!",
+                text: "Tu nueva clave ha sido guardada satisfactoriamente.",
+                timer: 1500,
                 showConfirmButton: false
             });
         }

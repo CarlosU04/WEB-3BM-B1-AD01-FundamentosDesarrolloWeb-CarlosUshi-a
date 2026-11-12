@@ -1,25 +1,7 @@
 /**
- * AUTH.JS - AutoTech
+ * AUTH.JS - AUTOFIX EVOL
  * Control de Inicio/Cierre de Sesión y actualización del Menú (Navbar)
  */
-
-// Botones de acceso rápido para demostración rápida en exposición
-function cargarPrueba(tipo) {
-    const loginEmail = document.getElementById("loginEmail");
-    const loginPass = document.getElementById("loginPass");
-    if (!loginEmail || !loginPass) return;
-
-    if (tipo === 'carlos') {
-        loginEmail.value = "carlos@autotech.com";
-        loginPass.value = "123";
-    } else if (tipo === 'maria') {
-        loginEmail.value = "maria@autotech.com";
-        loginPass.value = "123";
-    } else if (tipo === 'admin') {
-        loginEmail.value = "admin@autotech.com";
-        loginPass.value = "admin";
-    }
-}
 
 // Cerrar sesión
 function cerrarSesion() {

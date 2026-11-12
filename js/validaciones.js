@@ -1,5 +1,5 @@
 /**
- * VALIDACIONES.JS - AutoTech
+ * VALIDACIONES.JS - AUTOFIX EVOL
  * Validaciones avanzadas del formulario de citas, formato de campos y guardado
  */
 
@@ -305,12 +305,14 @@ document.addEventListener("DOMContentLoaded", function () {
             placaNormalizada = placaNormalizada.slice(0, 3) + "-" + placaNormalizada.slice(3);
         }
 
-        // 6. Almacenamiento en LocalStorage
+        // 6. Almacenamiento y Gestión de Usuario / Contraseña Temporal
         const usuarios = obtenerUsuarios();
-        let usuarioExistente = usuarios.find(u => u.email === email);
+        let usuarioExistente = usuarios.find(u => u.email.toLowerCase() === email.toLowerCase());
+        let esUsuarioNuevo = false;
 
         if (!usuarioExistente) {
-            // Si el cliente no estaba registrado, lo creamos para permitir su posterior consulta en el panel
+            esUsuarioNuevo = true;
+            // Si el cliente no estaba registrado, le creamos su cuenta automáticamente con contraseña básica 123
             usuarioExistente = {
                 nombre: nombre,
                 email: email,
@@ -322,7 +324,7 @@ document.addEventListener("DOMContentLoaded", function () {
             localStorage.setItem("usuarios", JSON.stringify(usuarios));
         }
 
-        // Si no había sesión activa, iniciamos sesión con el usuario actual para que al ir al panel vea su cita de inmediato
+        // Si no había sesión activa, iniciamos sesión con el usuario de la cita
         if (!obtenerSesion()) {
             guardarSesion(usuarioExistente);
         }
@@ -352,23 +354,64 @@ document.addEventListener("DOMContentLoaded", function () {
         // Desactivar alerta de salida al enviar con éxito
         formularioEnviado = true;
 
-        // 7. Notificación de éxito
+        // 7. Flujo de alertas consecutivas solicitadas:
+        // ALERTA 1: Confirmación de correo electrónico
         Swal.fire({
-            icon: "success",
-            title: "¡Cita Agendada Exitosamente!",
+            icon: "question",
+            title: "¿Es correcto tu correo?",
             html: `
-                <div class="text-start small p-2 bg-light rounded border">
-                    <p class="mb-1"><strong>Código de Cita:</strong> <span class="badge bg-warning text-dark">${nuevaCita.id}</span></p>
-                    <p class="mb-1"><strong>Propietario:</strong> ${nuevaCita.nombre} (${nuevaCita.telefono})</p>
-                    <p class="mb-1"><strong>Vehículo:</strong> ${nuevaCita.marca} ${nuevaCita.modelo} (${nuevaCita.anio}) - Placa: <strong>${nuevaCita.placa}</strong></p>
-                    <p class="mb-1"><strong>Fecha y Hora:</strong> ${nuevaCita.fecha} a las ${nuevaCita.hora}</p>
-                    <p class="mb-0"><strong>Servicios:</strong> ${nuevaCita.servicios.join(", ")}</p>
+                <p class="mb-2">Se registrará y vinculará tu cita automotriz a:</p>
+                <div class="alert alert-warning py-2 mb-2 fw-bold text-dark fs-6 border-warning">
+                    <i class="bi bi-envelope-at-fill"></i> ${email}
                 </div>
+                <small class="text-muted">Propietario: <strong>${nombre}</strong></small>
             `,
+            showCancelButton: true,
             confirmButtonColor: "#ffc107",
-            confirmButtonText: "Ver en Mi Panel"
-        }).then(() => {
-            window.location.href = "panel.html";
+            cancelButtonColor: "#6c757d",
+            confirmButtonText: "Sí, es correcto",
+            cancelButtonText: "Modificar correo"
+        }).then((result) => {
+            if (!result.isConfirmed) {
+                // El usuario desea corregir su correo
+                document.getElementById("email").focus();
+                return;
+            }
+
+            // ALERTA 2: Cita lista y entrega de contraseña temporal 123
+            Swal.fire({
+                icon: "success",
+                title: "¡Lista tu cita en AUTOFIX EVOL!",
+                html: `
+                    <div class="text-start small p-3 bg-light rounded border mb-3">
+                        <div class="d-flex justify-content-between align-items-center mb-2 pb-2 border-bottom">
+                            <span class="fw-bold">Código de Cita:</span>
+                            <span class="badge bg-warning text-dark fs-6">${nuevaCita.id}</span>
+                        </div>
+                        <p class="mb-1"><strong>Vehículo:</strong> ${nuevaCita.marca} ${nuevaCita.modelo} (${nuevaCita.anio}) - Placa: <strong>${nuevaCita.placa}</strong></p>
+                        <p class="mb-1"><strong>Fecha y Hora:</strong> ${nuevaCita.fecha} a las ${nuevaCita.hora}</p>
+                        <p class="mb-0"><strong>Servicios:</strong> ${nuevaCita.servicios.join(", ")}</p>
+                    </div>
+
+                    ${esUsuarioNuevo ? `
+                        <div class="alert alert-info text-start p-2 border-info mb-2 small">
+                            <h6 class="alert-heading fw-bold mb-1 text-primary"><i class="bi bi-person-check-fill"></i> Cuenta Creada Automáticamente</h6>
+                            <p class="mb-1">Tu usuario ha sido generado con éxito para consultar tu cita en cualquier momento.</p>
+                            <p class="mb-1"><strong>Correo:</strong> <code>${email}</code></p>
+                            <p class="mb-1"><strong>Contraseña temporal:</strong> <span class="badge bg-dark text-warning fs-6">123</span></p>
+                            <small class="text-muted fst-italic">* Puedes cambiar esta contraseña cuando gustes desde tu perfil en el panel.</small>
+                        </div>
+                    ` : `
+                        <div class="alert alert-secondary text-start p-2 mb-2 small">
+                            <i class="bi bi-info-circle"></i> Cita vinculada a tu cuenta existente (<strong>${email}</strong>). Puedes ingresar con tu contraseña actual o la base <strong>123</strong>.
+                        </div>
+                    `}
+                `,
+                confirmButtonColor: "#ffc107",
+                confirmButtonText: '<i class="bi bi-speedometer2"></i> Ir a Mi Panel'
+            }).then(() => {
+                window.location.href = "panel.html";
+            });
         });
     });
 });

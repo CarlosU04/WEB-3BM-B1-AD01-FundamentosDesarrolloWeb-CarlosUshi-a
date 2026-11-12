@@ -1,5 +1,5 @@
 /* ========================================================
-   ESTILOS PERSONALIZADOS - AUTOTECH
+   ESTILOS PERSONALIZADOS - AUTOFIX EVOL
    Estudiante: Carlos Ushiña
    ======================================================== */
 
@@ -15,10 +15,37 @@ main {
     flex: 1;
 }
 
+/* Logo en barra de navegación */
+.navbar-logo {
+    height: 42px;
+    width: auto;
+    object-fit: contain;
+    transition: transform 0.2s ease;
+}
+
+.navbar-brand:hover .navbar-logo {
+    transform: scale(1.03);
+}
+
 /* Banner de Inicio con degradado automotriz */
 .hero-section {
     background: linear-gradient(135deg, #1b1e22 0%, #2f353a 100%);
     border-bottom: 4px solid #ffc107;
+}
+
+/* Imagen visual para horarios de atención */
+.img-horario-hero {
+    max-width: 100%;
+    width: 480px;
+    height: auto;
+    border-radius: 1.25rem;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.45);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.img-horario-hero:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px rgba(255, 193, 7, 0.15);
 }
 
 /* Botón amarillo destacado */
